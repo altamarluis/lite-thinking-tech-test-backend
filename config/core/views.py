@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import FileResponse
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -10,6 +11,7 @@ from .serializers import (
     ProductSerializer,
     InventoryItemSerializer,
 )
+from .services.pdfgenerator import generate_inventory_pdf
 
 class HealthCheckView(APIView):
     permission_classes = [AllowAny]
@@ -32,3 +34,13 @@ class InventoryListCreateView(generics.ListCreateAPIView):
     queryset = InventoryItemModel.objects.select_related("company", "product")
     serializer_class = InventoryItemSerializer
     permission_classes = [IsAuthenticated]
+
+class InventoryPDFView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        inventory = InventoryItemModel.objects.select_related(
+            "company", "product"
+        )
+        pdf_buffer = generate_inventory_pdf(inventory)
+        return FileResponse(pdf_buffer, as_attachment=True, filename="inventory.pdf")
