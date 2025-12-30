@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import FileResponse
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -12,6 +12,7 @@ from .serializers import (
     InventoryItemSerializer,
 )
 from .services.pdfgenerator import generate_inventory_pdf
+from .services.emailsender import send_email
 
 class HealthCheckView(APIView):
     permission_classes = [AllowAny]
@@ -44,3 +45,17 @@ class InventoryPDFView(APIView):
         )
         pdf_buffer = generate_inventory_pdf(inventory)
         return FileResponse(pdf_buffer, as_attachment=True, filename="inventory.pdf")
+    
+class SendEmailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        email = request.data.get("email")
+        if not email:
+            return Response(
+                {"error": "email is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        send_email(email)
+        return Response({"status": "sent"}, status=status.HTTP_200_OK)

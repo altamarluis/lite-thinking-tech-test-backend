@@ -4,6 +4,7 @@ from .views import (
     ProductListCreateView,
     InventoryListCreateView,
     InventoryPDFView,
+    SendEmailView,
 )
 
 urlpatterns = [
@@ -11,4 +12,5 @@ urlpatterns = [
     path("products/", ProductListCreateView.as_view()),
     path("inventory/", InventoryListCreateView.as_view()),
     path("inventory/pdf/", InventoryPDFView.as_view()),
+    path("email/send/", SendEmailView.as_view()),
 ]
