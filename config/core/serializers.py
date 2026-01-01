@@ -11,7 +11,7 @@ class CompanySerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductModel
-        fields = "__all__"
+        fields = ["code", "name", "features", "prices"]
 
 
 class InventoryItemSerializer(serializers.ModelSerializer):
@@ -34,8 +34,15 @@ class InventoryItemSerializer(serializers.ModelSerializer):
         company_nit = validated_data.pop("company_nit")
         product_code = validated_data.pop("product_code")
 
-        company = CompanyModel.objects.get(nit=company_nit)
-        product = ProductModel.objects.get(code=product_code)
+        try:
+            company = CompanyModel.objects.get(nit=company_nit)
+        except CompanyModel.DoesNotExist:
+            raise serializers.ValidationError("Company not found")
+
+        try:
+            product = ProductModel.objects.get(code=product_code)
+        except ProductModel.DoesNotExist:
+            raise serializers.ValidationError("Product not found")
 
         return InventoryItemModel.objects.create(
             company=company,

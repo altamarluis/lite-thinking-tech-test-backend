@@ -25,17 +25,76 @@ class CompanyListCreateView(generics.ListCreateAPIView):
     serializer_class = CompanySerializer
     permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
 
+class CompanyDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    - GET: Retrieve company (admin & user)
+    - PUT/PATCH: Update company (admin only)
+    - DELETE: Delete company (admin only)
+    """
+    queryset = CompanyModel.objects.all()
+    serializer_class = CompanySerializer
+    permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
+    lookup_field = "nit"
+
 
 class ProductListCreateView(generics.ListCreateAPIView):
     queryset = ProductModel.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
 
+class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    - GET: Retrieve product (admin & user)
+    - PUT/PATCH: Update product (admin only)
+    - DELETE: Delete product (admin only)
+    """
+    queryset = ProductModel.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
+    lookup_field = "code"
+
 
 class InventoryListCreateView(generics.ListCreateAPIView):
     queryset = InventoryItemModel.objects.select_related("company", "product")
     serializer_class = InventoryItemSerializer
     permission_classes = [IsAuthenticated]
+
+class InventoryDetailView(generics.DestroyAPIView):
+    """
+    - DELETE: Remove product from inventory (admin only)
+    """
+    queryset = InventoryItemModel.objects.all()
+    serializer_class = InventoryItemSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class InventoryByCompanyView(generics.ListAPIView):
+    """
+    - GET: List inventory items by company NIT (admin & user)
+    """
+    serializer_class = InventoryItemSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        nit = self.kwargs["nit"]
+        return InventoryItemModel.objects.filter(company__nit=nit).select_related(
+            "company", "product"
+        )
+
+
+class ProductsByCompanyView(generics.ListAPIView):
+    """
+    - GET: List products by company NIT (admin & user)
+    """
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        nit = self.kwargs["nit"]
+        return ProductModel.objects.filter(
+            inventoryitemmodel__company__nit=nit
+        ).distinct()
+
 
 class InventoryPDFView(APIView):
     permission_classes = [IsAuthenticated]
