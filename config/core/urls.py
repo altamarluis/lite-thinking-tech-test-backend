@@ -5,6 +5,7 @@ from .views import (
     InventoryListCreateView,
     InventoryPDFView,
     SendEmailView,
+    InventorySummaryAIView,
 )
 
 urlpatterns = [
@@ -13,4 +14,5 @@ urlpatterns = [
     path("inventory/", InventoryListCreateView.as_view()),
     path("inventory/pdf/", InventoryPDFView.as_view()),
     path("email/send/", SendEmailView.as_view()),
+    path("inventory/summary/", InventorySummaryAIView.as_view()),
 ]

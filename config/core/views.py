@@ -13,6 +13,7 @@ from .serializers import (
 )
 from .services.pdfgenerator import generate_inventory_pdf
 from .services.emailsender import send_email
+from .services.aisummary import generate_inventory_summary
 
 class HealthCheckView(APIView):
     permission_classes = [AllowAny]
@@ -59,3 +60,10 @@ class SendEmailView(APIView):
 
         send_email(email)
         return Response({"status": "sent"}, status=status.HTTP_200_OK)
+    
+class InventorySummaryAIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        summary = generate_inventory_summary()
+        return Response({"summary": summary})
