@@ -5,8 +5,12 @@ class Product:
         if not name:
             raise ValueError("Product name is required")
         if not prices or not isinstance(prices, dict):
-            raise ValueError("Product prices must be a dictionary")
+            raise ValueError("Product must have prices by currency")
 
+        for currency, price in prices.items():
+            if price < 0:
+                raise ValueError(f"Price for {currency} cannot be negative")
+            
         self.code = code
         self.name = name
         self.features = features

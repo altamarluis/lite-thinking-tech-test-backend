@@ -1,11 +1,19 @@
 from rest_framework import serializers
 from .models import CompanyModel, ProductModel, InventoryItemModel
-
+from core.services.business_validations import (
+    validate_company,
+    validate_product,
+    validate_inventory,
+)
 
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyModel
         fields = "__all__"
+
+    def validate(self, data):
+        validate_company(data)
+        return data
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -13,6 +21,9 @@ class ProductSerializer(serializers.ModelSerializer):
         model = ProductModel
         fields = ["code", "name", "features", "prices"]
 
+    def validate(self, data):
+        validate_product(data)
+        return data
 
 class InventoryItemSerializer(serializers.ModelSerializer):
     company = CompanySerializer(read_only=True)
@@ -29,6 +40,13 @@ class InventoryItemSerializer(serializers.ModelSerializer):
             "company_nit",
             "product_code",
         ]
+
+    def validate(self, data):
+        company = CompanyModel.objects.get(nit=data["company_nit"])
+        product = ProductModel.objects.get(code=data["product_code"])
+
+        validate_inventory(company, product)
+        return data
 
     def create(self, validated_data):
         company_nit = validated_data.pop("company_nit")
