@@ -1,5 +1,24 @@
 class Product:
+    """
+    Domain entity that represents a product owned by a company.
+
+    Handles basic validation rules related to product identity and pricing.
+    """
+
     def __init__(self, code: str, name: str, features: str, prices: dict):
+        """
+        Initializes a Product entity.
+
+        Args:
+            code (str): Unique product code.
+            name (str): Product name.
+            features (str): Product characteristics or description.
+            prices (dict): Prices by currency (e.g. {"COP": 10000, "USD": 3}).
+
+        Raises:
+            ValueError: If required fields are missing or prices are invalid.
+        """
+
         if not code:
             raise ValueError("Product code is required")
         if not name:
@@ -14,4 +33,4 @@ class Product:
         self.code = code
         self.name = name
         self.features = features
-        self.prices = prices  # {"COP": 10000, "USD": 3}
+        self.prices = prices

@@ -36,5 +36,6 @@ urlpatterns = [
     # AI
     path("inventory/summary/", InventorySummaryAIView.as_view()),
 
+    # Auth
     path("auth/me/", get_current_user),
 ]
