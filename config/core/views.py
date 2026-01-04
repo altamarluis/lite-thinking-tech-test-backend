@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import FileResponse
 from rest_framework import generics, status
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -126,3 +127,12 @@ class InventorySummaryAIView(APIView):
     def get(self, request):
         summary = generate_inventory_summary()
         return Response({"summary": summary})
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_current_user(request):
+    return Response({
+        'username': request.user.username,
+        'is_admin': request.user.is_staff or request.user.is_superuser,
+        'user_id': request.user.id
+    })

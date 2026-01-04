@@ -11,6 +11,7 @@ from .views import (
     InventoryPDFView,
     SendEmailView,
     InventorySummaryAIView,
+    get_current_user,
 )
 
 urlpatterns = [
@@ -34,4 +35,6 @@ urlpatterns = [
 
     # AI
     path("inventory/summary/", InventorySummaryAIView.as_view()),
+
+    path("auth/me/", get_current_user),
 ]
