@@ -90,6 +90,6 @@ class InventoryItemSerializer(serializers.ModelSerializer):
         validated_data.pop("product_code")
 
         return InventoryItemModel.objects.create(
-            compacompany=validated_data["company"],
+            company=validated_data["company"],
             product=validated_data["product"]
         )
